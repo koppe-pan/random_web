@@ -11,9 +11,7 @@ body {
   padding: 60px 15px;
 }
 
-h1 {
-  color: #ff9999;
-}
+h1 { color: #ff9999; }
 
 button {
   background: #ff6699;
@@ -25,14 +23,9 @@ button {
   cursor: pointer;
 }
 
-button:disabled {
-  opacity: 0.5;
-}
-
-#status {
-  margin: 30px;
-}
-</style></head><body><h1>🎲 Nico Random</h1><p>Tag: Akira,Jeans&Chinpo</p><button id="drawButton" onclick="randomVideo()">
+#status { margin: 30px; }
+</style></head><body><h1>🎲 Nico Random</h1>
+<p>Tag: Akira,Jeans&Chinpo</p><button id="drawButton" onclick="randomVideo()">
   ランダム再生！
 </button><div id="status"></div><script>
 async function randomVideo() {
@@ -40,8 +33,8 @@ async function randomVideo() {
   const status = document.getElementById("status");
   const button = document.getElementById("drawButton");
 
-  status.textContent = "動画を探しています...";
   button.disabled = true;
+  status.textContent = "動画を探しています...";
 
   const api =
     "https://snapshot.search.nicovideo.jp/api/v2/snapshot/video/contents/search";
@@ -50,25 +43,27 @@ async function randomVideo() {
     q: "Akira,Jeans&Chinpo",
     targets: "tagsExact",
     fields: "contentId,title",
-    _sort: "-startTime",
-    _limit: "100"
+    _sort: "-viewCounter",
+    _offset: "0",
+    _limit: "100",
+    _context: "NicoRandom"
   });
 
   try {
-
     const response = await fetch(api + "?" + params);
 
     if (!response.ok) {
-      throw new Error("API error");
+      throw new Error("HTTP " + response.status);
     }
 
-    const data = await response.json();
-    const videos = data.data;
+    const result = await response.json();
 
-    if (!videos || videos.length === 0) {
+    if (!result.data || result.data.length === 0) {
       status.textContent = "動画が見つかりませんでした";
       return;
     }
+
+    const videos = result.data;
 
     const randomIndex = Math.floor(
       Math.random() * videos.length
@@ -82,12 +77,8 @@ async function randomVideo() {
       "https://www.nicovideo.jp/watch/" + video.contentId;
 
   } catch (error) {
-
-    status.textContent =
-      "検索に失敗しました。通信環境やAPIの利用条件を確認してください。";
-
+    status.textContent = "エラー: " + error.message;
     console.error(error);
-
   } finally {
     button.disabled = false;
   }
