@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ウマ娘 Random Roulette</title>  <style>
+    body {
+      font-family: sans-serif;
+      background: #fff0f5;
+      text-align: center;
+      padding: 50px 20px;
+      color: #333;
+    }
+
+    h1 {
+      color: #e75480;
+    }
+
+    button {
+      background: #e75480;
+      color: white;
+      border: none;
+      padding: 15px 35px;
+      font-size: 18px;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    #result {
+      margin: 30px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+  </style></head><body>  <h1>🐴 ウマ娘ルーレット</h1>  <p>今日の運命のウマ娘は誰だ！？</p><button onclick="draw()">抽選する！</button>
+
+  <div id="result"></div>  <script>
+    const characters = [
+      {
+        name: "スペシャルウィーク",
+        url: "https://umamusume.jp/character/specialweek/"
+      },
+      {
+        name: "サイレンススズカ",
+        url: "https://umamusume.jp/character/silencesuzuka/"
+      },
+      {
+        name: "トウカイテイオー",
+        url: "https://umamusume.jp/character/tokaiteio/"
+      },
+      {
+        name: "メジロマックイーン",
+        url: "https://umamusume.jp/character/mejiromcqueen/"
+      }
+    ];
+
+    let previousIndex = -1;
+
+    function draw() {
+      let index;
+
+      do {
+        index = Math.floor(Math.random() * characters.length);
+      } while (
+        index === previousIndex &&
+        characters.length > 1
+      );
+
+      previousIndex = index;
+
+      const character = characters[index];
+
+      document.getElementById("result").innerHTML =
+        `🎉 ${character.name}！<br><br>
+         <a href="${character.url}" target="_blank">
+         プロフィールを見る！
+         </a>`;
+    }
+  </script></body>
+</html>
