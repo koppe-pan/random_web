@@ -1,82 +1,96 @@
 <!DOCTYPE html><html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ウマ娘 Random Roulette</title>  <style>
-    body {
-      font-family: sans-serif;
-      background: #fff0f5;
-      text-align: center;
-      padding: 50px 20px;
-      color: #333;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nico Random</title><style>
+body {
+  background: #222;
+  color: white;
+  font-family: sans-serif;
+  text-align: center;
+  padding: 60px 15px;
+}
+
+h1 {
+  color: #ff9999;
+}
+
+button {
+  background: #ff6699;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 18px 40px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+#status {
+  margin: 30px;
+}
+</style></head><body><h1>🎲 Nico Random</h1><p>Tag: Akira,Jeans&Chinpo</p><button id="drawButton" onclick="randomVideo()">
+  ランダム再生！
+</button><div id="status"></div><script>
+async function randomVideo() {
+
+  const status = document.getElementById("status");
+  const button = document.getElementById("drawButton");
+
+  status.textContent = "動画を探しています...";
+  button.disabled = true;
+
+  const api =
+    "https://snapshot.search.nicovideo.jp/api/v2/snapshot/video/contents/search";
+
+  const params = new URLSearchParams({
+    q: "Akira,Jeans&Chinpo",
+    targets: "tagsExact",
+    fields: "contentId,title",
+    _sort: "-startTime",
+    _limit: "100"
+  });
+
+  try {
+
+    const response = await fetch(api + "?" + params);
+
+    if (!response.ok) {
+      throw new Error("API error");
     }
 
-    h1 {
-      color: #e75480;
+    const data = await response.json();
+    const videos = data.data;
+
+    if (!videos || videos.length === 0) {
+      status.textContent = "動画が見つかりませんでした";
+      return;
     }
 
-    button {
-      background: #e75480;
-      color: white;
-      border: none;
-      padding: 15px 35px;
-      font-size: 18px;
-      border-radius: 30px;
-      cursor: pointer;
-    }
+    const randomIndex = Math.floor(
+      Math.random() * videos.length
+    );
 
-    button:active {
-      transform: scale(0.95);
-    }
+    const video = videos[randomIndex];
 
-    #result {
-      margin: 30px;
-      font-size: 22px;
-      font-weight: bold;
-    }
-  </style></head><body>  <h1>🐴 ウマ娘ルーレット</h1>  <p>今日の運命のウマ娘は誰だ！？</p><button onclick="draw()">抽選する！</button>
+    status.textContent = video.title;
 
-  <div id="result"></div>  <script>
-    const characters = [
-      {
-        name: "スペシャルウィーク",
-        url: "https://umamusume.jp/character/specialweek/"
-      },
-      {
-        name: "サイレンススズカ",
-        url: "https://umamusume.jp/character/silencesuzuka/"
-      },
-      {
-        name: "トウカイテイオー",
-        url: "https://umamusume.jp/character/tokaiteio/"
-      },
-      {
-        name: "メジロマックイーン",
-        url: "https://umamusume.jp/character/mejiromcqueen/"
-      }
-    ];
+    window.location.href =
+      "https://www.nicovideo.jp/watch/" + video.contentId;
 
-    let previousIndex = -1;
+  } catch (error) {
 
-    function draw() {
-      let index;
+    status.textContent =
+      "検索に失敗しました。通信環境やAPIの利用条件を確認してください。";
 
-      do {
-        index = Math.floor(Math.random() * characters.length);
-      } while (
-        index === previousIndex &&
-        characters.length > 1
-      );
+    console.error(error);
 
-      previousIndex = index;
-
-      const character = characters[index];
-
-      document.getElementById("result").innerHTML =
-        `🎉 ${character.name}！<br><br>
-         <a href="${character.url}" target="_blank">
-         プロフィールを見る！
-         </a>`;
-    }
-  </script></body>
+  } finally {
+    button.disabled = false;
+  }
+}
+</script></body>
 </html>
